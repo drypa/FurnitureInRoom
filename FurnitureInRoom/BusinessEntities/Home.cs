@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using FurnitureInRoom.Events;
 
 namespace FurnitureInRoom.BusinessEntities
 {
@@ -11,11 +12,26 @@ namespace FurnitureInRoom.BusinessEntities
             get { return _rooms ?? (_rooms = new List<Room>()); }
         }
 
-
-        public void CreateRoom()
+        public event RoomAddedEventHandler RoomAdded;
+        private void OnRoomAdded(Room roomadded)
         {
-            Room newRoom = new Room();
+            RoomAddedEventHandler handler = RoomAdded;
+            if (handler != null) handler(this, roomadded);
+        }
+
+        public event RoomRemovedEventHandler RoomRemoved;
+
+        private void OnRoomRemoved(Room roomRemoved, Room anotherRoom)
+        {
+            RoomRemovedEventHandler handler = RoomRemoved;
+            if (handler != null) handler(this, roomRemoved, anotherRoom);
+        }
+
+        public void CreateRoom(string name)
+        {
+            Room newRoom = new Room(name);
             Rooms.Add(newRoom);
+            OnRoomAdded(newRoom);
         }
 
         public void RemoveRoom(string roomName,Room anotherRoom)
@@ -33,6 +49,7 @@ namespace FurnitureInRoom.BusinessEntities
             if (roomToDelete != null)
             {
                 Rooms.Remove(roomToDelete);
+                OnRoomRemoved(roomToDelete, anotherRoom);
             }
         }
 
