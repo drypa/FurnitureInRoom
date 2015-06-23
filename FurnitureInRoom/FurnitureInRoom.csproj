@@ -43,6 +43,7 @@
   <ItemGroup>
     <Compile Include="BusinessEntities\Furniture.cs" />
     <Compile Include="BusinessEntities\Home.cs" />
+    <Compile Include="HomeState.cs" />
     <Compile Include="BusinessEntities\Room.cs" />
     <Compile Include="Events\Events.cs" />
     <Compile Include="Program.cs" />
