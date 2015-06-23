@@ -12,7 +12,7 @@ namespace FurnitureInRoom.BusinessEntities
             Name = name;
         }
 
-        public string Name { get; set; }
+        public string Name { get; private set; }
 
         private List<Furniture> _furniture;
         private List<Furniture> Furniture {
