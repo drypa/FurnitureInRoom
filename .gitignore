@@ -1,3 +1,6 @@
 *.suo
 FurnitureInRoom/bin
 FurnitureInRoom/obj
+FurnitureInRoom.Tests/bin
+FurnitureInRoom.Tests/obj
+*.user
