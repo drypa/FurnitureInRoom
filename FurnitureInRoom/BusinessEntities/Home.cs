@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using FurnitureInRoom.Events;
+using FurnitureInRoom.Exceptions;
 
 namespace FurnitureInRoom.BusinessEntities
 {
@@ -50,13 +51,23 @@ namespace FurnitureInRoom.BusinessEntities
             OnRoomAdded(newRoom);
         }
 
-        public void RemoveRoom(string roomName,Room anotherRoom)
+        public void RemoveRoom(string roomName, string anotherRoomName)
         {
             Room roomToDelete = FindRoom(roomName);
-            if (roomToDelete == null) return;
-            
-            //TODO: make transactional
-            roomToDelete.MoveAll(anotherRoom);
+            if (roomToDelete == null)
+            {
+                throw new NoRoomFoundException(roomName);
+            }
+            Room anotherRoom = FindRoom(anotherRoomName);
+            if (roomToDelete.GetFurnitures().Count != 0)
+            {
+                if (anotherRoom == null)
+                {
+                    throw new NoRoomFoundException(anotherRoomName);
+                }
+                roomToDelete.MoveAll(anotherRoom);
+            }
+      
             Rooms.Remove(roomToDelete);
             OnRoomRemoved(roomToDelete, anotherRoom);
         }

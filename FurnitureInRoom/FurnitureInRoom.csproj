@@ -43,15 +43,20 @@
   <ItemGroup>
     <Compile Include="BusinessEntities\Furniture.cs" />
     <Compile Include="BusinessEntities\Home.cs" />
+    <Compile Include="Exceptions\NoHomeForThisDateException.cs" />
+    <Compile Include="Exceptions\NoRoomFoundException.cs" />
+    <Compile Include="FileSaver.cs" />
     <Compile Include="HomeState.cs" />
     <Compile Include="BusinessEntities\Room.cs" />
     <Compile Include="Events\Events.cs" />
+    <Compile Include="ISaver.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -79,5 +79,24 @@ namespace FurnitureInRoom.Tests
             Assert.AreEqual(0, furnitures.Count);
             Assert.AreEqual(3, anotherRoomfurnitures.Count);
         }
+
+        [TestMethod]
+        public void NothingHappendWhenMovingFurnitureToSameRoom()
+        {
+            int addEventsInvokedCount = 0;
+            int removeEventsInvokedCount = 0;
+            Room room = new Room("bedroom", (sender, added) =>
+            {
+                addEventsInvokedCount += 1;
+            }, (sender, remoed, newRoom) =>
+            {
+                removeEventsInvokedCount += 1;
+            });
+            const string sofaType = "Sofa";
+            room.CreateFurniture(sofaType);
+            room.Move(sofaType, room);
+            Assert.AreEqual(1,addEventsInvokedCount);
+            Assert.AreEqual(0,removeEventsInvokedCount);
+        }
     }
 }

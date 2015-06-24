@@ -1,13 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using FurnitureInRoom.BusinessEntities;
 using FurnitureInRoom.Events;
+using FurnitureInRoom.Exceptions;
 
 namespace FurnitureInRoom
 {
     public sealed class HomeState
     {
+        private readonly ISaver<HomeState> _saver;
+
+        public HomeState()
+        {
+            Changed += Save;
+        }
+        public HomeState(ISaver<HomeState> saver):this()
+        {
+            _saver = saver;
+        }
+
+        private void Save(object sender, Home home)
+        {
+            _saver.Save(this);
+        }
         private SortedDictionary<DateTime, Home> _states;
         private SortedDictionary<DateTime, Home> States
         {
@@ -33,7 +48,12 @@ namespace FurnitureInRoom
         }
         public void RemoveRoom(string roomName, string otherRoom, DateTime date)
         {
-            throw new NotImplementedException();
+            Home home = GetClosestHomeState(date);
+            if (home == null)
+            {
+                throw new NoHomeForThisDateException();
+            }
+            home.RemoveRoom(roomName, otherRoom);
         }
 
         public IList<Room> GetRoomsList(DateTime date)
@@ -71,7 +91,7 @@ namespace FurnitureInRoom
                 return result;
             }
             result = CreateNewHome(date);
-            
+
 
             States.Add(date, result);
 
@@ -92,7 +112,7 @@ namespace FurnitureInRoom
             Home result = null;
             foreach (var pair in States)
             {
-                if (pair.Key < newDate)
+                if (pair.Key <= newDate)
                 {
                     result = pair.Value;
                 }

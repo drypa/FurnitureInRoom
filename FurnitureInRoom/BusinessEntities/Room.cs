@@ -52,6 +52,7 @@ namespace FurnitureInRoom.BusinessEntities
 
         public void Move(string furnitureType, Room anotherRoom)
         {
+            if (this == anotherRoom) return;
             foreach (Furniture furniture in Furniture)
             {
                 if (furniture.Type == furnitureType)

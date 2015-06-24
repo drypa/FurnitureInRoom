@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using FurnitureInRoom.Exceptions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace FurnitureInRoom.Tests
@@ -64,5 +65,28 @@ namespace FurnitureInRoom.Tests
             Assert.AreEqual(2, history.Count);
             Assert.AreEqual(2, history.Last().Value.GetRooms().Count);
         }
+
+        [TestMethod]
+        [ExpectedException(typeof(NoHomeForThisDateException))]
+        public void RemoveRoomShouldThrowNoHomeForThisDateExceptionWhenNoDateFound()
+        {
+            HomeState stateHolder = new HomeState();
+            stateHolder.RemoveRoom("some room","other room",DateTime.Now);
+        }
+
+        [TestMethod]
+        public void CanRemoveRoomWithoutFurniture()
+        {
+            HomeState stateHolder = new HomeState();
+            DateTime date= DateTime.Now;
+            const string roomName = "bedroom";
+            stateHolder.CreateRoom(roomName, date);
+            stateHolder.RemoveRoom(roomName,null,date);
+            Assert.AreEqual(0, stateHolder.GetHistory()[date].GetRooms().Count);
+            stateHolder.CreateRoom(roomName, date);
+            stateHolder.RemoveRoom(roomName, roomName, date);
+            Assert.AreEqual(0, stateHolder.GetHistory()[date].GetRooms().Count);
+        }
+
     }
 }
