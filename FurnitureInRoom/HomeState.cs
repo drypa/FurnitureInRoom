@@ -21,6 +21,7 @@ namespace FurnitureInRoom
 
         private void Save(object sender, Home home)
         {
+            if (_saver!=null)
             _saver.Save(this);
         }
         private SortedDictionary<DateTime, Home> _states;
@@ -54,13 +55,16 @@ namespace FurnitureInRoom
 
         public IList<Room> GetRoomsList(DateTime date)
         {
-            var home = GetHomeByDate(date);
+            var home = GetClosestHomeState(date);
             return home.GetRooms();
         }
 
         public void CreateFurniture(string furnitureType, string roomName, DateTime date)
         {
-            throw new NotImplementedException();
+            Home home = GetHome(date);
+
+            var room = home.FindRoom(roomName) ?? home.CreateRoom(roomName);
+            room.CreateFurniture(furnitureType);
         }
 
         public void MoveFurniture(string furnitureType, string fromRoomName, string toRoomName, DateTime date)
@@ -82,16 +86,18 @@ namespace FurnitureInRoom
 
         private Home GetStateByDate(DateTime date)
         {
+            Home result = GetHome(date);
+            return result;
+        }
+
+        private Home GetHome(DateTime date)
+        {
             Home result;
             if (States.TryGetValue(date, out result))
             {
                 return result;
             }
             result = CreateNewHome(date);
-
-
-            States.Add(date, result);
-
             return result;
         }
 
@@ -99,7 +105,15 @@ namespace FurnitureInRoom
         {
             Home result;
             Home home = GetClosestHomeState(date);
-            result = home != null ? home.Clone() : new Home();
+            if (home != null)
+            {
+                result = home.Clone();
+            }
+            else
+            {
+                result = new Home();
+            }
+            States.Add(date,result);
             result.Changed += (sender, h) => OnChanged(h);
             return result;
         }

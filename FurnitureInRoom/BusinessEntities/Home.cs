@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using FurnitureInRoom.Events;
@@ -44,11 +43,12 @@ namespace FurnitureInRoom.BusinessEntities
             if (handler != null) handler(this, roomRemoved, anotherRoom);
         }
 
-        public void CreateRoom(string name)
+        public Room CreateRoom(string name)
         {
             Room newRoom = new Room(name, (sender, added) => OnChanged(this), (sender, removed, room) => OnChanged(this));
             Rooms.Add(newRoom);
             OnRoomAdded(newRoom);
+            return newRoom;
         }
 
         public void RemoveRoom(string roomName, string anotherRoomName)
@@ -72,7 +72,7 @@ namespace FurnitureInRoom.BusinessEntities
             OnRoomRemoved(roomToDelete, anotherRoom);
         }
 
-        private Room FindRoom(string roomName)
+        public Room FindRoom(string roomName)
         {
             return Rooms.FirstOrDefault(room => room.Name == roomName);
         }
@@ -81,11 +81,6 @@ namespace FurnitureInRoom.BusinessEntities
         {
             return new ReadOnlyCollection<Room>(Rooms);
         }
-
-        #region helpers
-
-
-        #endregion helpers
 
         public Home Clone()
         {

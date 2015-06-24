@@ -114,5 +114,26 @@ namespace FurnitureInRoom.Tests
             Assert.AreEqual(1, list.Count);
 
         }
+
+        [TestMethod]
+        public void CanCreateFurniture()
+        {
+            HomeState stateHolder = new HomeState();
+            DateTime date = new DateTime(2015, 01, 01);
+            const string roomName = "bedroom";
+            const string furnitureName = "sofa";
+            stateHolder.CreateFurniture(furnitureName, roomName, date);
+            Assert.AreEqual(1, stateHolder.GetRoomsList(date).Count);
+            Assert.AreEqual(roomName, stateHolder.GetRoomsList(date).First().Name);
+            Assert.AreEqual(1, stateHolder.GetRoomsList(date).First().GetFurnitures().Count);
+            Assert.AreEqual(furnitureName, stateHolder.GetRoomsList(date).First().GetFurnitures().First().Type);
+
+            stateHolder.CreateFurniture(furnitureName, roomName, date);
+            Assert.AreEqual(1, stateHolder.GetRoomsList(date).Count);
+            Assert.AreEqual(roomName, stateHolder.GetRoomsList(date).First().Name);
+            Assert.AreEqual(2, stateHolder.GetRoomsList(date).First().GetFurnitures().Count);
+            Assert.AreEqual(furnitureName, stateHolder.GetRoomsList(date).First().GetFurnitures().First().Type);
+            Assert.AreEqual(furnitureName, stateHolder.GetRoomsList(date).First().GetFurnitures().Last().Type);
+        }
     }
 }

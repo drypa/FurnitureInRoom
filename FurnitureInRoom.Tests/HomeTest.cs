@@ -19,11 +19,13 @@ namespace FurnitureInRoom.Tests
             };
 
             Assert.AreEqual(0, home.GetRooms().Count);
-            home.CreateRoom("living room");
+            var room = home.CreateRoom("living room");
+            Assert.IsNotNull(room);
             Assert.AreEqual(1, roomsAddedCount--);
             Assert.AreEqual(1, home.GetRooms().Count);
 
-            home.CreateRoom("bedroom");
+            room =home.CreateRoom("bedroom");
+            Assert.IsNotNull(room);
             Assert.AreEqual(1, roomsAddedCount--);
             Assert.AreEqual(2, home.GetRooms().Count);
         }
@@ -40,11 +42,13 @@ namespace FurnitureInRoom.Tests
 
             const string bedroomName = "bedroom";
             const string livingroomName = "living room";
-            home.CreateRoom(bedroomName);
+            var room =home.CreateRoom(bedroomName);
+            Assert.IsNotNull(room);
             home.GetRooms().First().CreateFurniture("table");
             home.GetRooms().First().CreateFurniture("chair");
 
-            home.CreateRoom(livingroomName);
+            room = home.CreateRoom(livingroomName);
+            Assert.IsNotNull(room);
             Assert.AreEqual(2, home.GetRooms().Count);
             Room livingRoom = home.GetRooms().Last();
             Assert.AreEqual(0, livingRoom.GetFurnitures().Count);
@@ -65,7 +69,8 @@ namespace FurnitureInRoom.Tests
         public void RemoveRoomShouldThrowNoRoomFoundExceptionIfWrongAnotherRoomNameIfThereAreSomeFurnitureInFirstRoom()
         {
             Home home = new Home();
-            home.CreateRoom("room1");
+            var room = home.CreateRoom("room1");
+            Assert.IsNotNull(room);
             home.GetRooms().First().CreateFurniture("sofa");
             home.RemoveRoom("room1", "room2");
         }
