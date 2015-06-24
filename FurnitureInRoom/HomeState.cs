@@ -17,7 +17,8 @@ namespace FurnitureInRoom
 
         public void CreateRoom(string roomName, DateTime date)
         {
-            throw new NotImplementedException();
+            Home home = GetStateByDate(date);
+            home.CreateRoom(roomName);
         }
         public void RemoveRoom(string roomName, string otherRoom, DateTime date)
         {
@@ -29,7 +30,7 @@ namespace FurnitureInRoom
             throw new NotImplementedException();
         }
 
-        public void CreateFurniture(string furnitureType,string roomName, DateTime date)
+        public void CreateFurniture(string furnitureType, string roomName, DateTime date)
         {
             throw new NotImplementedException();
         }
@@ -41,11 +42,31 @@ namespace FurnitureInRoom
 
         public Dictionary<DateTime, Home> GetHistory()
         {
-            throw new NotImplementedException();
+            //TODO: need clone to prevent collection change
+            return States;
         }
         public List<DateTime> GetHomeChangeDates()
         {
             throw new NotImplementedException();
         }
+
+        #region helpers
+
+        private Home GetStateByDate(DateTime date)
+        {
+            Home result;
+            if (States.TryGetValue(date, out result))
+            {
+                return result;
+            }
+            //TODO: need copy prev. home state
+            result = new Home((sender, added) => { },(sender, removed, room) => { });
+
+            States.Add(date, result);
+
+            return result;
+        }
+
+        #endregion helpers
     }
 }

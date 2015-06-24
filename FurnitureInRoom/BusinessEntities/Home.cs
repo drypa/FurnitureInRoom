@@ -6,6 +6,21 @@ namespace FurnitureInRoom.BusinessEntities
 {
     public sealed class Home
     {
+        public Home(RoomAddedEventHandler addedEventHandler,RoomRemovedEventHandler removedEventHandler)
+        {
+            RoomAdded += addedEventHandler;
+            RoomRemoved += removedEventHandler;
+        }
+
+        public event HomeChangedEventHandler Changed;
+
+        private void OnChanged(Home home)
+        {
+            HomeChangedEventHandler handler = Changed;
+            if (handler != null) handler(this, home);
+        }
+
+
         private List<Room> _rooms;
         private List<Room> Rooms
         {
@@ -29,7 +44,7 @@ namespace FurnitureInRoom.BusinessEntities
 
         public void CreateRoom(string name)
         {
-            Room newRoom = new Room(name);
+            Room newRoom = new Room(name, (sender, added) => OnChanged(this), (sender, removed, room) => OnChanged(this));
             Rooms.Add(newRoom);
             OnRoomAdded(newRoom);
         }

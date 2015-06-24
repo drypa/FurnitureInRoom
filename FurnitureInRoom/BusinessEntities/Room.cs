@@ -7,9 +7,11 @@ namespace FurnitureInRoom.BusinessEntities
 {
     public sealed class Room
     {
-        public Room(string name)
+        public Room(string name, FurnitureAddedEventHandler addedEventHandler,FurnitureRemovedEventHandler removedEventHandler)
         {
             Name = name;
+            FurnitureAdded += addedEventHandler;
+            FurnitureRemoved += removedEventHandler;
         }
 
         public string Name { get; private set; }
@@ -28,10 +30,10 @@ namespace FurnitureInRoom.BusinessEntities
 
         public event FurnitureRemovedEventHandler FurnitureRemoved;
 
-        private void OnFurnitureRemoved(Furniture furnitureRemoed, Room newRoom)
+        private void OnFurnitureRemoved(Furniture furnitureRemoved, Room newRoom)
         {
             FurnitureRemovedEventHandler handler = FurnitureRemoved;
-            if (handler != null) handler(this, furnitureRemoed, newRoom);
+            if (handler != null) handler(this, furnitureRemoved, newRoom);
         }
 
         public void CreateFurniture(string type)

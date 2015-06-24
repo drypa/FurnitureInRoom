@@ -10,12 +10,12 @@ namespace FurnitureInRoom.Tests
         [TestMethod]
         public void CanAddNewRoomToHome()
         {
-            Home home = new Home();
             int roomsAddedCount = 0;
-            home.RoomAdded += (sender, added) =>
+            Home home = new Home((sender, added) =>
             {
                 roomsAddedCount += 1;
-            };
+            },null);
+            
             Assert.AreEqual(0, home.GetRooms().Count);
             home.CreateRoom("living room");
             Assert.AreEqual(1, roomsAddedCount--);
@@ -29,12 +29,12 @@ namespace FurnitureInRoom.Tests
         [TestMethod]
         public void CanRemoveRoomFromHome()
         {
-            Home home = new Home();
             int roomsReomovedCount = 0;
-            home.RoomRemoved += (sender, added, anotherRoom) =>
+            Home home = new Home(null,(sender, added, anotherRoom) =>
             {
                 roomsReomovedCount += 1;
-            };
+            });
+            
             const string bedroomName = "bedroom";
             const string livingroomName = "bedroom";
             home.CreateRoom(bedroomName);

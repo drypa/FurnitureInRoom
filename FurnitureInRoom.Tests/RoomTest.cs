@@ -11,12 +11,12 @@ namespace FurnitureInRoom.Tests
         [TestMethod]
         public void CanAddNewFurnitureToRoom()
         {
-            Room room = new Room("bedroom");
             int addedEventsInvokedCount = 0;
-            room.FurnitureAdded += (sender, added) =>
+            Room room = new Room("bedroom",(sender, added) =>
             {
                 addedEventsInvokedCount += 1;
-            };
+            },null);
+            
             IList<Furniture> furnitures = room.GetFurnitures();
             Assert.AreEqual(0, furnitures.Count);
 
@@ -42,12 +42,12 @@ namespace FurnitureInRoom.Tests
         [TestMethod]
         public void CanMoveFurnitureToAnotherRoom()
         {
-            Room room = new Room("bedroom");
             int removeEventsInvokedCount = 0;
-            room.FurnitureRemoved += (sender, remoed, newRoom) =>
+            Room room = new Room("bedroom",null,(sender, remoed, newRoom) =>
             {
                 removeEventsInvokedCount += 1;
-            };
+            });
+
             const string sofaType = "Sofa";
             room.CreateFurniture(sofaType);
             room.CreateFurniture(sofaType);
@@ -56,7 +56,7 @@ namespace FurnitureInRoom.Tests
             IList<Furniture> furnitures = room.GetFurnitures();
             Assert.AreEqual(3, furnitures.Count);
 
-            Room anotherRoom = new Room("living room");
+            Room anotherRoom = new Room("living room",null,null);
             room.Move(sofaType, anotherRoom);
             Assert.AreEqual(1, removeEventsInvokedCount--, "There are no event invoked when furniture was moved");
             IList<Furniture> anotherRoomfurnitures = anotherRoom.GetFurnitures();

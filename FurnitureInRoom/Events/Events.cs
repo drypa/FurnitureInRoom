@@ -7,4 +7,7 @@ namespace FurnitureInRoom.Events
 
     public delegate void RoomAddedEventHandler(object sender, Room roomAdded);
     public delegate void RoomRemovedEventHandler(object sender, Room roomRemoved, Room anotherRoom);
+    
+
+    public delegate void HomeChangedEventHandler(object sender, Home home);
 }
