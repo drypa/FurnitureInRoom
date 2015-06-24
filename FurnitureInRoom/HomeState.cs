@@ -48,17 +48,14 @@ namespace FurnitureInRoom
         }
         public void RemoveRoom(string roomName, string otherRoom, DateTime date)
         {
-            Home home = GetClosestHomeState(date);
-            if (home == null)
-            {
-                throw new NoHomeForThisDateException();
-            }
+            var home = GetHomeByDate(date);
             home.RemoveRoom(roomName, otherRoom);
         }
 
         public IList<Room> GetRoomsList(DateTime date)
         {
-            throw new NotImplementedException();
+            var home = GetHomeByDate(date);
+            return home.GetRooms();
         }
 
         public void CreateFurniture(string furnitureType, string roomName, DateTime date)
@@ -118,6 +115,16 @@ namespace FurnitureInRoom
                 }
             }
             return result;
+        }
+
+        private Home GetHomeByDate(DateTime date)
+        {
+            Home home = GetClosestHomeState(date);
+            if (home == null)
+            {
+                throw new NoHomeForThisDateException();
+            }
+            return home;
         }
 
         #endregion helpers
