@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using FurnitureInRoom.Events;
@@ -7,7 +8,7 @@ namespace FurnitureInRoom.BusinessEntities
 {
     public sealed class Room
     {
-        public Room(string name, FurnitureAddedEventHandler addedEventHandler,FurnitureRemovedEventHandler removedEventHandler)
+        public Room(string name, FurnitureAddedEventHandler addedEventHandler, FurnitureRemovedEventHandler removedEventHandler)
         {
             Name = name;
             FurnitureAdded += addedEventHandler;
@@ -17,7 +18,8 @@ namespace FurnitureInRoom.BusinessEntities
         public string Name { get; private set; }
 
         private List<Furniture> _furniture;
-        private List<Furniture> Furniture {
+        private List<Furniture> Furniture
+        {
             get { return _furniture ?? (_furniture = new List<Furniture>()); }
         }
 
@@ -48,7 +50,7 @@ namespace FurnitureInRoom.BusinessEntities
             return new ReadOnlyCollection<Furniture>(Furniture);
         }
 
-        public void Move(string furnitureType,Room anotherRoom)
+        public void Move(string furnitureType, Room anotherRoom)
         {
             foreach (Furniture furniture in Furniture)
             {
@@ -58,12 +60,12 @@ namespace FurnitureInRoom.BusinessEntities
                     return;
                 }
             }
-            
+
         }
 
         public void MoveAll(Room anotherRoom)
         {
-            while (Furniture.Count>0)
+            while (Furniture.Count > 0)
             {
                 Furniture furniture = Furniture.First();
                 Move(furniture, anotherRoom);
@@ -78,5 +80,14 @@ namespace FurnitureInRoom.BusinessEntities
             OnFurnitureRemoved(furniture, anotherRoom);
         }
 
+        public Room Clone()
+        {
+            var clonedRoom = new Room(Name, null, null);
+            foreach (Furniture furniture in Furniture)
+            {
+                clonedRoom.Furniture.Add(furniture.Clone());
+            }
+            return clonedRoom;
+        }
     }
 }

@@ -1,15 +1,16 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using FurnitureInRoom.Events;
 
 namespace FurnitureInRoom.BusinessEntities
 {
     public sealed class Home
     {
-        public Home(RoomAddedEventHandler addedEventHandler,RoomRemovedEventHandler removedEventHandler)
+        public Home(HomeChangedEventHandler changedEventHandler = null)
         {
-            RoomAdded += addedEventHandler;
-            RoomRemoved += removedEventHandler;
+            Changed += changedEventHandler;
         }
 
         public event HomeChangedEventHandler Changed;
@@ -51,26 +52,38 @@ namespace FurnitureInRoom.BusinessEntities
 
         public void RemoveRoom(string roomName,Room anotherRoom)
         {
-            Room roomToDelete = null;
-            foreach (Room room in Rooms)
-            {
-                if (room.Name == roomName)
-                {
-                    roomToDelete = room;
-                    room.MoveAll(anotherRoom);
-                    break;
-                }
-            }
-            if (roomToDelete != null)
-            {
-                Rooms.Remove(roomToDelete);
-                OnRoomRemoved(roomToDelete, anotherRoom);
-            }
+            Room roomToDelete = FindRoom(roomName);
+            if (roomToDelete == null) return;
+            
+            //TODO: make transactional
+            roomToDelete.MoveAll(anotherRoom);
+            Rooms.Remove(roomToDelete);
+            OnRoomRemoved(roomToDelete, anotherRoom);
+        }
+
+        private Room FindRoom(string roomName)
+        {
+            return Rooms.FirstOrDefault(room => room.Name == roomName);
         }
 
         public ReadOnlyCollection<Room> GetRooms()
         {
             return new ReadOnlyCollection<Room>(Rooms);
+        }
+
+        #region helpers
+
+
+        #endregion helpers
+
+        public Home Clone()
+        {
+            var clonedHome = new Home();
+            foreach (Room room in Rooms)
+            {
+                clonedHome.Rooms.Add(room.Clone());
+            }
+            return clonedHome;
         }
     }
 }

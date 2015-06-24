@@ -1,6 +1,6 @@
 ﻿namespace FurnitureInRoom.BusinessEntities
 {
-    public class Furniture
+    public class Furniture 
     {
         public Furniture(string type)
         {
@@ -8,6 +8,10 @@
         }
         public string Type { get; private set; }
 
+        public Furniture Clone()
+        {
+            return new Furniture(Type);
+        }
 
     }
 }

@@ -1,19 +1,30 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using FurnitureInRoom.BusinessEntities;
+using FurnitureInRoom.Events;
 
 namespace FurnitureInRoom
 {
-    public class HomeState
+    public sealed class HomeState
     {
-        private Dictionary<DateTime, Home> _states;
-        private Dictionary<DateTime, Home> States
+        private SortedDictionary<DateTime, Home> _states;
+        private SortedDictionary<DateTime, Home> States
         {
             get
             {
-                return _states ?? (_states = new Dictionary<DateTime, Home>());
+                return _states ?? (_states = new SortedDictionary<DateTime, Home>());
             }
         }
+
+        private event HomeChangedEventHandler Changed;
+
+        private void OnChanged(Home home)
+        {
+            HomeChangedEventHandler handler = Changed;
+            if (handler != null) handler(this, home);
+        }
+
 
         public void CreateRoom(string roomName, DateTime date)
         {
@@ -40,7 +51,7 @@ namespace FurnitureInRoom
             throw new NotImplementedException();
         }
 
-        public Dictionary<DateTime, Home> GetHistory()
+        public SortedDictionary<DateTime, Home> GetHistory()
         {
             //TODO: need clone to prevent collection change
             return States;
@@ -59,11 +70,33 @@ namespace FurnitureInRoom
             {
                 return result;
             }
-            //TODO: need copy prev. home state
-            result = new Home((sender, added) => { },(sender, removed, room) => { });
+            result = CreateNewHome(date);
+            
 
             States.Add(date, result);
 
+            return result;
+        }
+
+        private Home CreateNewHome(DateTime date)
+        {
+            Home result;
+            Home home = GetClosestHomeState(date);
+            result = home != null ? home.Clone() : new Home();
+            result.Changed += (sender, h) => OnChanged(h);
+            return result;
+        }
+
+        private Home GetClosestHomeState(DateTime newDate)
+        {
+            Home result = null;
+            foreach (var pair in States)
+            {
+                if (pair.Key < newDate)
+                {
+                    result = pair.Value;
+                }
+            }
             return result;
         }
 
