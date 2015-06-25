@@ -15,21 +15,36 @@ namespace FurnitureInRoom
         private readonly Dictionary<Command, Action<string>> _supportedCommands;
 
 
-        public CommandProcessor(IHomeState stateHolder,TextWriter writer)
+        public CommandProcessor(IHomeState stateHolder, TextWriter writer)
         {
             NeedQuit = false;
             _stateHolder = stateHolder;
             _writer = writer;
             _supportedCommands = new Dictionary<Command, Action<string>>
             {
-                 {new Command("create-room"),ProcessCreateRoom} 
-                ,{new Command("remove-room"),ProcessRemoveRoom} 
-                ,{new Command("create-furniture"),ProcessCreateFurniture} 
-                ,{new Command("move-furniture"),ProcessMoveFurniture} 
-                ,{new Command("query"),ProcessQuery} 
-                ,{new Command("history"),ProcessHistory} 
+                 {new Command("create-room","-room smtg","[-date smtg]"),ProcessCreateRoom} 
+                ,{new Command("remove-room","-room smtg","-transfer smtg","[-date smtg]"),ProcessRemoveRoom} 
+                ,{new Command("create-furniture","-type smtg","-room smtg","[-date smtg]"),ProcessCreateFurniture} 
+                ,{new Command("move-furniture","-type smtg","-room smtg","-to smtg","[-date smtg]"),ProcessMoveFurniture} 
+                ,{new Command("query","[-date smtg]"),ProcessQuery} 
+                ,{new Command("history","[-short]"),ProcessHistory} 
                 ,{new Command("quit"),ProcessQuit} 
+                ,{new Command("help"),ProcessHelp} 
             };
+        }
+
+        public void Help()
+        {
+            _writer.WriteLine("Suppotted commands:");
+            foreach (var command in _supportedCommands.Keys)
+            {
+                _writer.WriteLine(command.Help());
+            }
+        }
+
+        private void ProcessHelp(string obj)
+        {
+            Help();
         }
 
         private void ProcessQuit(string obj)
@@ -82,7 +97,7 @@ namespace FurnitureInRoom
         private void ProcessQuery(string parameters)
         {
             var date = ExtractDateParameter(parameters, "-date") ?? DateTime.UtcNow;
-            _writer.WriteLine(_stateHolder.GetHomeByDate(date).Listing());         
+            _writer.WriteLine(_stateHolder.GetHomeByDate(date).Listing());
         }
 
         private void ProcessHistory(string parameters)
@@ -95,7 +110,7 @@ namespace FurnitureInRoom
             }
             else
             {
-                result = string.Join("\r\n",_stateHolder.GetHistory().Select(GetString));
+                result = string.Join("\r\n", _stateHolder.GetHistory().Select(GetString));
             }
             _writer.WriteLine(result);
         }
