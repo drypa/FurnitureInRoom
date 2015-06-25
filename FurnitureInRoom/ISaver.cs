@@ -3,5 +3,6 @@
     public interface ISaver<T>
     {
         void Save(T obj);
+        T Load();
     }
 }

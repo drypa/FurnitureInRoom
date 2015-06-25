@@ -6,5 +6,10 @@
         {
             throw new System.NotImplementedException();
         }
+
+        public T Load()
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }
