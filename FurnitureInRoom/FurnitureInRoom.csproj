@@ -43,6 +43,9 @@
   <ItemGroup>
     <Compile Include="BusinessEntities\Furniture.cs" />
     <Compile Include="BusinessEntities\Home.cs" />
+    <Compile Include="Command.cs" />
+    <Compile Include="CommandProcessor.cs" />
+    <Compile Include="Exceptions\CommandNotSupportedException.cs" />
     <Compile Include="Exceptions\NoHomeForThisDateException.cs" />
     <Compile Include="Exceptions\NoRoomFoundException.cs" />
     <Compile Include="FileSaver.cs" />
