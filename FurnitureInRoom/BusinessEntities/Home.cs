@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using FurnitureInRoom.Events;
 using FurnitureInRoom.Exceptions;
@@ -90,6 +91,11 @@ namespace FurnitureInRoom.BusinessEntities
                 clonedHome.Rooms.Add(room.Clone());
             }
             return clonedHome;
+        }
+
+        public string Listing()
+        {
+            return string.Join("\r\n", Rooms.Select(x => x.Listing()));
         }
     }
 }

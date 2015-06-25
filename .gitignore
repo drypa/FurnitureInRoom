@@ -4,3 +4,4 @@ FurnitureInRoom/obj
 FurnitureInRoom.Tests/bin
 FurnitureInRoom.Tests/obj
 *.user
+packages/*

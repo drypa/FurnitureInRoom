@@ -12,9 +12,9 @@ namespace FurnitureInRoom.Tests
         public void CreateRoomShouldCreateNewStateIfDateNotExists()
         {
             HomeState stateHolder = new HomeState();
-            const string badroomName = "bedroom";
+            const string roomName = "bedroom";
             DateTime date = new DateTime(2015, 01, 05);
-            stateHolder.CreateRoom(badroomName, date);
+            stateHolder.CreateRoom(roomName, date);
             var history = stateHolder.GetHistory();
 
             Assert.AreEqual(1, history.Count);
@@ -22,14 +22,14 @@ namespace FurnitureInRoom.Tests
             Assert.AreEqual(date, history.First().Key);
             Assert.IsNotNull(history.First().Value);
             Assert.AreEqual(1, history.First().Value.GetRooms().Count);
-            Assert.AreEqual(badroomName, history.First().Value.GetRooms().First().Name);
+            Assert.AreEqual(roomName, history.First().Value.GetRooms().First().Name);
 
             DateTime newDate = new DateTime(2015, 01, 06);
-            stateHolder.CreateRoom(badroomName, newDate);
+            stateHolder.CreateRoom(roomName, newDate);
             Assert.AreEqual(2, history.Count);
 
             newDate = new DateTime(2014, 01, 01);
-            stateHolder.CreateRoom(badroomName, newDate);
+            stateHolder.CreateRoom(roomName, newDate);
             Assert.AreEqual(3, history.Count);
         }
 
@@ -134,6 +134,42 @@ namespace FurnitureInRoom.Tests
             Assert.AreEqual(2, stateHolder.GetRoomsList(date).First().GetFurnitures().Count);
             Assert.AreEqual(furnitureName, stateHolder.GetRoomsList(date).First().GetFurnitures().First().Type);
             Assert.AreEqual(furnitureName, stateHolder.GetRoomsList(date).First().GetFurnitures().Last().Type);
+        }
+
+        [TestMethod]
+        public void CanMoveFurniture()
+        {
+            HomeState stateHolder = new HomeState();
+            DateTime date = new DateTime(2015, 01, 01);
+            const string roomName = "bedroom";
+            const string anotherRoom = "anotherRoom";
+            const string furnitureName = "sofa";
+            stateHolder.CreateFurniture(furnitureName, roomName, date);
+            stateHolder.CreateRoom(anotherRoom, date);
+            stateHolder.MoveFurniture(furnitureName, roomName, anotherRoom, date);
+        }
+
+        [TestMethod]
+        public void CanGetHomeChangeDates()
+        {
+            HomeState stateHolder = new HomeState();
+            DateTime date = new DateTime(2015, 01, 01);
+            const string roomName = "bedroom";
+            const string furnitureName = "sofa";
+            stateHolder.CreateFurniture(furnitureName, roomName, date);
+
+            var dates = stateHolder.GetHomeChangeDates();
+            Assert.IsNotNull(dates);
+            Assert.AreEqual(1, dates.Count);
+            Assert.AreEqual(date, dates.First());
+            
+            DateTime anotherDate = new DateTime(2015, 01, 02);
+            stateHolder.CreateFurniture(furnitureName, roomName, anotherDate);
+            dates = stateHolder.GetHomeChangeDates();
+            Assert.IsNotNull(dates);
+            Assert.AreEqual(2, dates.Count);
+            Assert.IsTrue(dates.Contains(date));
+            Assert.IsTrue(dates.Contains(anotherDate));
         }
     }
 }

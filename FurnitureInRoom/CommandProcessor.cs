@@ -1,19 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using FurnitureInRoom.BusinessEntities;
 using FurnitureInRoom.Exceptions;
 
 namespace FurnitureInRoom
 {
     public class CommandProcessor
     {
-        private readonly HomeState _stateHolder;
+        private readonly IHomeState _stateHolder;
+        private readonly TextWriter _writer;
         private readonly Dictionary<Command, Action<string>> _supportedCommands;
 
 
-        public CommandProcessor(HomeState stateHolder)
+        public CommandProcessor(IHomeState stateHolder,TextWriter writer)
         {
             _stateHolder = stateHolder;
+            _writer = writer;
             _supportedCommands = new Dictionary<Command, Action<string>>
             {
                  {new Command("create-room"),ProcessCreateRoom} 
@@ -39,30 +43,58 @@ namespace FurnitureInRoom
             throw new CommandNotSupportedException(request);
         }
 
-        public void ProcessCreateRoom(string command)
+        private void ProcessCreateRoom(string parameters)
         {
-            throw new NotImplementedException();
+            var date = ExtractDateParameter(parameters, "-date") ?? DateTime.UtcNow;
+            var room = ExtractStringParameter(parameters, "-room");
+            _stateHolder.CreateRoom(room, date);
         }
-        public void ProcessRemoveRoom(string command)
+        private void ProcessRemoveRoom(string parameters)
         {
-            throw new NotImplementedException();
+            var date = ExtractDateParameter(parameters, "-date") ?? DateTime.UtcNow;
+            var room = ExtractStringParameter(parameters, "-room");
+            var anotherRoom = ExtractStringParameter(parameters, "-transfer");
+            _stateHolder.RemoveRoom(room, anotherRoom, date);
         }
-        public void ProcessCreateFurniture(string command)
+        private void ProcessCreateFurniture(string parameters)
         {
-            throw new NotImplementedException();
+            var date = ExtractDateParameter(parameters, "-date") ?? DateTime.UtcNow;
+            var room = ExtractStringParameter(parameters, "-room");
+            var furnitureType = ExtractStringParameter(parameters, "-type");
+            _stateHolder.CreateFurniture(furnitureType, room, date);
         }
-        public void ProcessMoveFurniture(string command)
+        private void ProcessMoveFurniture(string parameters)
         {
-            throw new NotImplementedException();
+            var date = ExtractDateParameter(parameters, "-date") ?? DateTime.UtcNow;
+            var room = ExtractStringParameter(parameters, "-room");
+            var furnitureType = ExtractStringParameter(parameters, "-type");
+            var anotherRoom = ExtractStringParameter(parameters, "-to");
+            _stateHolder.MoveFurniture(furnitureType, room, anotherRoom, date);
         }
-        public void ProcessQuery(string command)
+        private void ProcessQuery(string parameters)
         {
-            throw new NotImplementedException();
+            var date = ExtractDateParameter(parameters, "-date") ?? DateTime.UtcNow;
+            _writer.WriteLine(_stateHolder.GetHomeByDate(date).Listing());         
         }
 
-        public void ProcessHistory(string command)
+        private void ProcessHistory(string parameters)
         {
-            throw new NotImplementedException();
+            var shortHistory = ExtractBoolParameter(parameters, "-short");
+            string result = null;
+            if (shortHistory)
+            {
+                result = string.Join("\r\n", _stateHolder.GetHomeChangeDates());
+            }
+            else
+            {
+                result = string.Join("\r\n",_stateHolder.GetHistory().Select(GetString));
+            }
+            _writer.WriteLine(result);
+        }
+
+        private string GetString(KeyValuePair<DateTime, Home> pair)
+        {
+            return string.Format("{0}:\r\n{1}", pair.Key, pair.Value.Listing());
         }
 
         public List<string> GetSupportedCommandList()
@@ -70,9 +102,45 @@ namespace FurnitureInRoom
             return _supportedCommands.Keys.Select(x => x.CommandName).ToList();
         }
 
-        private string ExtractParameter(string request, string paramName)
+        private bool ExtractBoolParameter(string request, string paramName)
         {
-            throw new NotSupportedException();
+            var arr = request.Split(' ');
+            return arr.Any(str => str.Equals(paramName, StringComparison.InvariantCultureIgnoreCase));
+        }
+
+
+        private string ExtractStringParameter(string request, string paramName)
+        {
+            var arr = request.Split(' ');
+            for (int i = 0; i < arr.Length; ++i)
+            {
+                string str = arr[i];
+                if (str.Equals(paramName, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    var paramPosition = i + 1;
+                    if (paramPosition < arr.Length)
+                    {
+                        return arr[paramPosition].Trim();
+                    }
+                    throw new CommandParameterException(paramName);
+                }
+            }
+            return null;
+        }
+
+        private DateTime? ExtractDateParameter(string request, string paramName)
+        {
+            var valueAsString = ExtractStringParameter(request, paramName);
+            if (string.IsNullOrEmpty(valueAsString))
+            {
+                return null;
+            }
+            DateTime date;
+            if (!DateTime.TryParse(valueAsString, out date))
+            {
+                throw new CommandParameterException(paramName);
+            }
+            return date;
         }
     }
 }

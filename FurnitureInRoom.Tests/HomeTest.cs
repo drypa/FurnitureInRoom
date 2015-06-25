@@ -74,5 +74,19 @@ namespace FurnitureInRoom.Tests
             home.GetRooms().First().CreateFurniture("sofa");
             home.RemoveRoom("room1", "room2");
         }
+
+        [TestMethod]
+        public void CanListingHome()
+        {
+            Home home = new Home();
+            Room room = home.CreateRoom("bedroom");
+            room.CreateFurniture("sofa");
+            room.CreateFurniture("chair");
+            var listing = home.Listing();
+            Assert.IsNotNull(listing);
+            Assert.IsTrue(listing.Contains("bedroom"));
+            Assert.IsTrue(listing.Contains("sofa"));
+            Assert.IsTrue(listing.Contains("chair"));
+        }
     }
 }

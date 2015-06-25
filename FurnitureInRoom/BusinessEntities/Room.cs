@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using FurnitureInRoom.Events;
+using FurnitureInRoom.Exceptions;
 
 namespace FurnitureInRoom.BusinessEntities
 {
@@ -61,7 +62,7 @@ namespace FurnitureInRoom.BusinessEntities
                     return;
                 }
             }
-
+            throw new NoFurnitureFoundException(furnitureType);
         }
 
         public void MoveAll(Room anotherRoom)
@@ -89,6 +90,12 @@ namespace FurnitureInRoom.BusinessEntities
                 clonedRoom.Furniture.Add(furniture.Clone());
             }
             return clonedRoom;
+        }
+
+        public string Listing()
+        {
+            var furnitures = string.Join("\r\n", Furniture.Select(x=>x.Type));
+            return string.Format("Room: {0} \r\n{1}", Name, furnitures);
         }
     }
 }
