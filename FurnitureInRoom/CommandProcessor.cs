@@ -9,6 +9,7 @@ namespace FurnitureInRoom
 {
     public class CommandProcessor
     {
+        public bool NeedQuit { get; set; }
         private readonly IHomeState _stateHolder;
         private readonly TextWriter _writer;
         private readonly Dictionary<Command, Action<string>> _supportedCommands;
@@ -16,6 +17,7 @@ namespace FurnitureInRoom
 
         public CommandProcessor(IHomeState stateHolder,TextWriter writer)
         {
+            NeedQuit = false;
             _stateHolder = stateHolder;
             _writer = writer;
             _supportedCommands = new Dictionary<Command, Action<string>>
@@ -26,7 +28,13 @@ namespace FurnitureInRoom
                 ,{new Command("move-furniture"),ProcessMoveFurniture} 
                 ,{new Command("query"),ProcessQuery} 
                 ,{new Command("history"),ProcessHistory} 
+                ,{new Command("quit"),ProcessQuit} 
             };
+        }
+
+        private void ProcessQuit(string obj)
+        {
+            NeedQuit = true;
         }
 
         public void Process(string request)
