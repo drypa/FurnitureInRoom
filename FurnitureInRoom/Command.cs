@@ -2,11 +2,11 @@
 {
     public class Command
     {
-        private readonly string[] _parameters;
+        private readonly string _exapmle;
 
-        public Command(string name,params string[] parameters)
+        public Command(string name,string exapmle=null)
         {
-            _parameters = parameters;
+            _exapmle = exapmle;
             CommandName = name;
         }
 
@@ -14,7 +14,6 @@
         
         public bool IsSuitableFor(string request)
         {
-            //TODO: check required parameters
             return request.Trim().StartsWith(CommandName);
         }
 
@@ -25,7 +24,7 @@
 
         public string Help()
         {
-            return string.Format("{0} {1}", CommandName, string.Join(" ", _parameters));
+            return _exapmle ?? CommandName;
         }
 
     }

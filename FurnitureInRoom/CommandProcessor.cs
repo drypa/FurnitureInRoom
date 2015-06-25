@@ -22,12 +22,12 @@ namespace FurnitureInRoom
             _writer = writer;
             _supportedCommands = new Dictionary<Command, Action<string>>
             {
-                 {new Command("create-room","-room smtg","[-date smtg]"),ProcessCreateRoom} 
-                ,{new Command("remove-room","-room smtg","-transfer smtg","[-date smtg]"),ProcessRemoveRoom} 
-                ,{new Command("create-furniture","-type smtg","-room smtg","[-date smtg]"),ProcessCreateFurniture} 
-                ,{new Command("move-furniture","-type smtg","-room smtg","-to smtg","[-date smtg]"),ProcessMoveFurniture} 
-                ,{new Command("query","[-date smtg]"),ProcessQuery} 
-                ,{new Command("history","[-short]"),ProcessHistory} 
+                 {new Command("create-room","create-room -room room1 [-date 01.01.2015]"),ProcessCreateRoom} 
+                ,{new Command("remove-room","remove-room -room room1 -transfer room2 [-date 01.01.2015]"),ProcessRemoveRoom} 
+                ,{new Command("create-furniture","create-furniture -type smtg -room room1 [-date 01.01.2015]"),ProcessCreateFurniture} 
+                ,{new Command("move-furniture","move-furniture -type sofa -room room1 -to room2 [-date 01.01.2015]"),ProcessMoveFurniture} 
+                ,{new Command("query","query [-date 01.01.2015]"),ProcessQuery} 
+                ,{new Command("history","history [-short]"),ProcessHistory} 
                 ,{new Command("quit"),ProcessQuit} 
                 ,{new Command("help"),ProcessHelp} 
             };
