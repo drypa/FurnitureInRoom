@@ -25,6 +25,10 @@ namespace FurnitureInRoom
                 {
                     Console.Error.WriteLine("Command parameter '{0}' error", commandParameterException.ParameterName);
                 }
+                catch (NoHomeForThisDateException noHomeForThisDateException)
+                {
+                    Console.Error.WriteLine("There are no data about date '{0}'", noHomeForThisDateException.Date);
+                }
 
             }
         }

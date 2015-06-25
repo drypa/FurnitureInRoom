@@ -163,7 +163,7 @@ namespace FurnitureInRoom
             Home home = GetClosestHomeState(date);
             if (home == null)
             {
-                throw new NoHomeForThisDateException();
+                throw new NoHomeForThisDateException(date);
             }
             return home;
         }
